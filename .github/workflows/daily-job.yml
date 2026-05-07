@@ -1,25 +1,35 @@
-name: Execucao Diaria
+name: Playwright Tests Diarios
 
-# Define quando a pipeline será executada
 on:
   schedule:
-    # Sintaxe Cron: Minuto Hora Dia Mes Dia_da_Semana
-    # '0 0 * * *' significa todos os dias às 00:00 UTC
-    - cron: '0 0 * * *'
-  
-  # Permite que executes a pipeline manualmente para testar
-  workflow_dispatch:
+    - cron: '0 0 * * *' # Corre todos os dias à meia-noite
+  workflow_dispatch:     # Permite correr manualmente agora
 
 jobs:
-  tarefa-agendada:
-    runs-on: ubuntu-latest # Máquina virtual gratuita fornecida pelo GitHub
-
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout do código
-        uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: Executar script de teste
-        run: |
-          echo "A correr a tarefa diária..."
-          date
-          echo "Pipeline finalizada com sucesso!"
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
+
+    - name: Instalar dependencias
+      run: npm install
+
+    - name: Instalar Browsers do Playwright
+      run: npx playwright install --with-deps
+
+    - name: Correr Testes Playwright
+      run: npx playwright test
+
+    - name: Guardar Relatorio
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
+
