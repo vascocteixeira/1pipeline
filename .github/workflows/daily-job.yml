@@ -1,0 +1,25 @@
+name: Execucao Diaria
+
+# Define quando a pipeline será executada
+on:
+  schedule:
+    # Sintaxe Cron: Minuto Hora Dia Mes Dia_da_Semana
+    # '0 0 * * *' significa todos os dias às 00:00 UTC
+    - cron: '0 0 * * *'
+  
+  # Permite que executes a pipeline manualmente para testar
+  workflow_dispatch:
+
+jobs:
+  tarefa-agendada:
+    runs-on: ubuntu-latest # Máquina virtual gratuita fornecida pelo GitHub
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Executar script de teste
+        run: |
+          echo "A correr a tarefa diária..."
+          date
+          echo "Pipeline finalizada com sucesso!"
